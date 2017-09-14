@@ -22,39 +22,57 @@ class JobsStatsServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Queue::before(function (JobProcessing $event) {
-            $uuid = unserialize(json_decode($event->job->getRawBody())->data->command)->uuid;
-            $jobsStatsJob = JobsStatsJob::where('uuid', $uuid)->latest()->first();
+            $originalJob = $this->getOriginalJobObject($event);
+            $jobsStatsJob = JobsStatsJob::where('uuid', $originalJob->uuid)->latest()->first();
+            $attempt = $event->job->attempts();
+
             $jobsStatsJob->update([
-                'attempts'   => $event->job->attempts(),
+                'attempts'   => $attempt,
                 'connection' => $event->connectionName,
+                'queue'      => $event->job->getQueue(),
             ]);
+
+            $previousAttemptFinishedAt = null;
+
+            if ($attempt > 1) {
+                $previousAttemptFinishedAt = $jobsStatsJob->tries()->where('attempt', $attempt - 1)->value('finished_at');
+            } else {
+                $previousAttemptFinishedAt = $jobsStatsJob->getAttribute('instantiated_at');
+            }
+
+            $now = microtime(true);
+
             $jobsStatsJob->tries()->create([
-                'attempt'    => $event->job->attempts(),
-                'status'     => JobsStatsJobTry::STATUS_STARTED,
-                'started_at' => microtime(true),
+                'attempt'          => $attempt,
+                'status'           => JobsStatsJobTry::STATUS_STARTED,
+                'started_at'       => $now,
+                'waiting_duration' => $now - (float) $previousAttemptFinishedAt,
             ]);
         });
 
         Queue::after(function (JobProcessed $event) {
-            $microtime = microtime(true);
-            $uuid = unserialize(json_decode($event->job->getRawBody())->data->command)->uuid;
-            $jobsStatsJob = JobsStatsJob::where('uuid', $uuid)->latest()->first();
+            $now = microtime(true);
+            $originalJob = $this->getOriginalJobObject($event);
+
+            $jobsStatsJob = JobsStatsJob::where('uuid', $originalJob->uuid)->latest()->first();
             $jobsStatsJob->update([
                 'status' => JobsStatsJob::STATUS_SUCCESS,
             ]);
             $jobsStatsJobTry = $jobsStatsJob->tries()->where('status', JobsStatsJobTry::STATUS_STARTED)->latest()->first();
+
             if (null !== $jobsStatsJobTry) {
                 $jobsStatsJobTry->update([
                     'status'            => JobsStatsJobTry::STATUS_COMPLETED,
-                    'finished_at'       => $microtime,
-                    'handling_duration' => $microtime - $jobsStatsJobTry->getAttribute('started_at'),
+                    'finished_at'       => $now,
+                    'handling_duration' => $now - $jobsStatsJobTry->getAttribute('started_at'),
                 ]);
             }
         });
 
         Queue::failing(function (JobFailed $event) {
-            $microtime = microtime(true);
-            $uuid = unserialize(json_decode($event->job->getRawBody())->data->command)->uuid;
+            $now = microtime(true);
+            $originalJob = $this->getOriginalJobObject($event);
+            $uuid = $originalJob->uuid;
             $jobsStatsJob = JobsStatsJob::where('uuid', $uuid)->latest()->first();
             $jobsStatsJob->update([
                 'status' => JobsStatsJob::STATUS_FAILED,
@@ -63,26 +81,27 @@ class JobsStatsServiceProvider extends ServiceProvider
             if (null !== $jobsStatsJobTry) {
                 $jobsStatsJobTry->update([
                     'status'               => JobsStatsJobTry::STATUS_FAILED,
-                    'finished_at'          => $microtime,
+                    'finished_at'          => $now,
                     'exception_message'    => $event->exception->getMessage(),
                     'exception_call_stack' => json_encode($event->exception->getTrace()),
-                    'handling_duration'    => $microtime - $jobsStatsJobTry->getAttribute('started_at'),
+                    'handling_duration'    => $now - $jobsStatsJobTry->getAttribute('started_at'),
                 ]);
             }
         });
 
         Queue::exceptionOccurred(function (JobExceptionOccurred $event) {
-            $microtime = microtime(true);
-            $uuid = unserialize(json_decode($event->job->getRawBody())->data->command)->uuid;
+            $now = microtime(true);
+            $originalJob = $this->getOriginalJobObject($event);
+            $uuid = $originalJob->uuid;
             $jobsStatsJob = JobsStatsJob::where('uuid', $uuid)->latest()->first();
             $jobsStatsJobTry = $jobsStatsJob->tries()->where('attempt', $event->job->attempts())->latest()->first();
             if (null !== $jobsStatsJobTry) {
                 $jobsStatsJobTry->update([
                     'status'               => JobsStatsJobTry::STATUS_FAILED,
-                    'finished_at'          => $microtime,
+                    'finished_at'          => $now,
                     'exception_message'    => $event->exception->getMessage(),
                     'exception_call_stack' => json_encode($event->exception->getTrace()),
-                    'handling_duration'    => $microtime - $jobsStatsJobTry->getAttribute('started_at'),
+                    'handling_duration'    => $now - $jobsStatsJobTry->getAttribute('started_at'),
                 ]);
             }
         });
@@ -98,5 +117,12 @@ class JobsStatsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../../database/migrations/' => database_path('migrations'),
         ], 'migrations');
+    }
+
+    protected function getOriginalJobObject($event)
+    {
+        $jobData = $event->job->payload();
+
+        return unserialize($jobData['data']['command'], ['allowed_classes' => [$jobData['data']['commandName']]]);
     }
 }

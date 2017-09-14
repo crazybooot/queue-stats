@@ -31,10 +31,10 @@ trait JobsStatsTrait
         $this->uuid = uniqid('jobs_stats', true);
 
         JobsStatsJob::create([
-            'uuid'       => $this->uuid,
-            'class'      => get_class($this),
-            'created_at' => Carbon::now(),
-            'status'     => JobsStatsJob::STATUS_NOT_HANDLED,
+            'uuid'            => $this->uuid,
+            'class'           => get_class($this),
+            'instantiated_at' => microtime(true),
+            'status'          => JobsStatsJob::STATUS_NOT_HANDLED,
         ]);
     }
 

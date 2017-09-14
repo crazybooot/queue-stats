@@ -24,14 +24,14 @@ class JobsStatsJob extends Model
         'class',
         'attempts',
         'connection',
+        'queue',
         'status',
         'result',
         'handling_duration',
         'waiting_duration',
-        'created_at',
+        'instantiated_at',
     ];
 
-    public $timestamps = false;
 
     protected $casts = [];
 
