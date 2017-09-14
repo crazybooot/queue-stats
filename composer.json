@@ -1,0 +1,19 @@
+{
+    "name": "crazybooot/laravel-jobs-stats",
+    "description": "Laravel 5+ package to collecting jobs handling statistics",
+    "type": "laravel package",
+    "authors": [
+        {
+            "name": "crazybooot",
+            "email": "crazybooot@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Crazybooot\\JobsStats\\": "/src"
+        }
+    }
+}
