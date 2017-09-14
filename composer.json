@@ -1,7 +1,7 @@
 {
-    "name": "crazybooot/laravel-jobs-stats",
+    "name": "crazybooot/jobs-stats",
     "description": "Laravel 5+ package to collecting jobs handling statistics",
-    "type": "laravel package",
+    "type": "package",
     "authors": [
         {
             "name": "crazybooot",
