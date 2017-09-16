@@ -1,10 +1,7 @@
 <?php
-declare(strict_types = 1);
-
 namespace Crazybooot\JobsStats\Traits;
 
-use Carbon\Carbon;
-use Crazybooot\JobsStats\Models\JobsStatsJob;
+use Crazybooot\JobsStats\Models\Job;
 
 /**
  * Trait JobsStatsTrait
@@ -24,30 +21,51 @@ trait JobsStatsTrait
     public $result;
 
     /**
-     * Register job to track stats
+     *
      */
-    protected function registerJob(): void
+    public function __clone()
     {
+        $this->registerJob();
+    }
+
+    /**
+     * @return string
+     */
+    public function getUuid()
+    {
+        if (null !== $this->uuid) {
+            return $this->uuid;
+        }
+
         $this->uuid = uniqid('jobs_stats', true);
 
-        JobsStatsJob::create([
-            'uuid'            => $this->uuid,
-            'class'           => get_class($this),
-            'instantiated_at' => microtime(true),
-            'status'          => JobsStatsJob::STATUS_NOT_HANDLED,
+        return $this->uuid;
+    }
+
+    /**
+     * Register job to track stats
+     */
+    protected function registerJob()
+    {
+        if (null === $this->uuid) {
+            $this->uuid = uniqid('jobs_stats', true);
+        }
+
+        Job::create([
+            'uuid'      => $this->uuid,
+            'class'     => get_class($this),
+            'queued_at' => microtime(true),
+            'status'    => Job::STATUS_NOT_HANDLED,
         ]);
     }
 
     /**
      * @param array $result
      */
-    protected function saveResult(array $result): void
+    protected function saveResult(array $result)
     {
-        $jobsStatsJob = JobsStatsJob::where('uuid', $this->uuid)->latest()->first();
-        if (null !== $jobsStatsJob) {
-            $jobsStatsJob->update([
-                'result' => json_encode($result),
-            ]);
-        }
+        Job::where('uuid', $this->uuid)->update([
+            'result' => json_encode($result),
+        ]);
     }
 }
