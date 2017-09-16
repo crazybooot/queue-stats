@@ -42,25 +42,30 @@ class ExampleJob implementes ShouldQueue
 
 ## Using
 
-Now you can get statistics about your job:
+Get statistics about job:
 
 ``` php
 ...
 use Crazybooot\JobsStats\Models\Job;
 
 ...
-Job::where('status', Job::STATUS_FAILED)->count(); // count successfully handled jobs
+// count successfully handled jobs
+Job::where('status', Job::STATUS_FAILED)->count();
 
-Job::where('status', Job::STATUS_SUCCESS)->count(); // count failed hobs
+// count failed hobs
+Job::where('status', Job::STATUS_SUCCESS)->count();
 
-Job::where('status', Job::STATUS_NOT_HANDLED)->count(); // count jobs pushed to queue but not handled
+// count jobs pushed to queue but not handled
+Job::where('status', Job::STATUS_NOT_HANDLED)->count();
 
-Job::where('status', Job::STATUS_SUCCESS)->where('attempts_count', 1)->count(); // count job handled by one attempt
+// count job handled by one attempt
+Job::where('status', Job::STATUS_SUCCESS)->where('attempts_count', 1)->count();
 
-Job::where('status', Job::STATUS_SUCCESS)->where('attempts_count', '>' 1)->count(); // count job handled more by one attempt
+// count job handled more by one attempt
+Job::where('status', Job::STATUS_SUCCESS)->where('attempts_count', '>' 1)->count(); 
 ```
 
-You can get statistics about one job:
+You can get statistics about one job by using getUuid() method on job instance before dispatching job:
 ``` php
 ...
 use Crazybooot\JobsStats\Models\Job;
@@ -77,7 +82,34 @@ dispath($job);
 
 ...
 
-$isSuccess = Job::where('uuid', $uuid)->where('status', Job::STATUS_SUCCESS)->count() > 0; // check if job was handled successfully
+// check if job was handled successfully
+$isSuccess = Job::where('uuid', $uuid)->where('status', Job::STATUS_SUCCESS)->count() > 0;
+```
+You can add some job results to statistics passing array of data
+you want to save $this->saveResult().
+Result will be stored in database in json format what allows to query
+more complex data with Eloquent or Query Builder.
+``` php
+use Crazybooot\JobsStats\Traits\JobsStatsTrait;
+
+class ExampleJob implementes ShouldQueue
+{
+    use JobsStatsTrait;
+    
+    ...
+    
+    public function handle()
+    {
+    
+    ...
+    
+    $this->saveResult([
+        'some_key' => [
+            'some_key' => 'some_payload'
+        ]
+    ]);
+    }
+}
 ```
 
 ## Requirements
