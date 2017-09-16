@@ -1,14 +1,13 @@
 <?php
-declare(strict_types = 1);
 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateJobsStatsJobTriesTable
+ * Class CreateJobsStatsJobAttemptsTable
  */
-class CreateJobsStatsJobTriesTable extends Migration
+class CreateJobsStatsJobAttemptsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -17,10 +16,10 @@ class CreateJobsStatsJobTriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('jobs_stats_job_tries', function (Blueprint $table) {
+        Schema::create('jobs_stats_job_attempts', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('jobs_stats_job_id');
-            $table->unsignedInteger('attempt');
+            $table->unsignedInteger('attempt_number');
             $table->double('started_at')->nullable();
             $table->double('finished_at')->nullable();
             $table->double('handling_duration')->nullable();

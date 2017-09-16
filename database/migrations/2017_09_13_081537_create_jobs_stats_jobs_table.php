@@ -1,5 +1,4 @@
 <?php
-declare(strict_types = 1);
 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
@@ -28,7 +27,7 @@ class CreateJobsStatsJobsTable extends Migration
             $table->unsignedInteger('attempts')->nullable();
             $table->string('status')->nullable();
             $table->json('result')->nullable();
-            $table->double('instantiated_at')->nullable();
+            $table->double('queued_at')->nullable();
             $table->timestamps();
         });
     }
