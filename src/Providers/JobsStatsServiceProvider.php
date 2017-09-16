@@ -33,9 +33,9 @@ class JobsStatsServiceProvider extends ServiceProvider
                 $attempt = $event->job->attempts();
 
                 $jobsStatsJob->update([
-                    'attempts'   => $attempt,
-                    'connection' => $event->connectionName,
-                    'queue'      => $event->job->getQueue(),
+                    'attempts_count' => $attempt,
+                    'connection'     => $event->connectionName,
+                    'queue'          => $event->job->getQueue(),
                 ]);
 
                 $previousAttemptFinishedAt = null;

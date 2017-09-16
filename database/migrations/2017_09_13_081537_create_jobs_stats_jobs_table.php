@@ -24,7 +24,7 @@ class CreateJobsStatsJobsTable extends Migration
             $table->double('waiting_duration')->nullable();
             $table->string('connection')->nullable();
             $table->string('queue')->nullable();
-            $table->unsignedInteger('attempts')->nullable();
+            $table->unsignedInteger('attempts_count')->default(0);
             $table->string('status')->nullable();
             $table->json('result')->nullable();
             $table->double('queued_at')->nullable();

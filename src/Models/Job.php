@@ -20,7 +20,7 @@ class Job extends Model
     protected $fillable = [
         'uuid',
         'class',
-        'attempts',
+        'attempts_count',
         'connection',
         'queue',
         'status',
