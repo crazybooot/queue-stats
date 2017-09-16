@@ -1,27 +1,25 @@
 <?php
-declare(strict_types = 1);
-
 namespace Crazybooot\JobsStats\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * Class JobsStatsJobTry
+ * Class Attempt
  *
  * @package Crazybooot\JobsStats\Models
  */
-class JobsStatsJobTry extends Model
+class Attempt extends Model
 {
     const STATUS_STARTED = 'STATUS_STARTED';
     const STATUS_FAILED = 'STATUS_FAILED';
     const STATUS_COMPLETED = 'STATUS_COMPLETED';
 
-    protected $table = 'jobs_stats_job_tries';
+    protected $table = 'jobs_stats_job_attempts';
 
     protected $fillable = [
         'jobs_stats_job_id',
-        'attempt',
+        'attempt_number',
         'started_at',
         'finished_at',
         'handling_duration',
@@ -36,8 +34,8 @@ class JobsStatsJobTry extends Model
     /**
      * @return BelongsTo
      */
-    public function job(): BelongsTo
+    public function job()
     {
-        return $this->belongsTo(JobsStatsJob::class, 'jobs_stats_job_id', 'id', 'jobs_stats_jobs');
+        return $this->belongsTo(Job::class, 'jobs_stats_job_id', 'id', 'jobs_stats_jobs');
     }
 }

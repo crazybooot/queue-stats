@@ -1,17 +1,15 @@
 <?php
-declare(strict_types = 1);
-
 namespace Crazybooot\JobsStats\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Class JobsStatsJob
+ * Class Job
  *
  * @package Crazybooot\JobsStats\Models
  */
-class JobsStatsJob extends Model
+class Job extends Model
 {
     const STATUS_NOT_HANDLED = 'STATUS_NOT_HANDLED';
     const STATUS_SUCCESS = 'STATUS_SUCCESS';
@@ -29,7 +27,7 @@ class JobsStatsJob extends Model
         'result',
         'handling_duration',
         'waiting_duration',
-        'instantiated_at',
+        'queued_at',
     ];
 
 
@@ -38,8 +36,8 @@ class JobsStatsJob extends Model
     /**
      * @return HasMany
      */
-    public function tries(): HasMany
+    public function attempts()
     {
-        return $this->hasMany(JobsStatsJobTry::class, 'jobs_stats_job_id', 'id');
+        return $this->hasMany(Attempt::class, 'jobs_stats_job_id', 'id');
     }
 }
