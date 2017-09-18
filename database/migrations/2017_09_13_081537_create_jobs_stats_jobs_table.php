@@ -20,11 +20,9 @@ class CreateJobsStatsJobsTable extends Migration
             $table->increments('id');
             $table->string('uuid')->index();
             $table->string('class');
-            $table->double('handling_duration')->nullable();
-            $table->double('waiting_duration')->nullable();
+            $table->string('type')->nullable();
             $table->string('connection')->nullable();
             $table->string('queue')->nullable();
-            $table->unsignedInteger('attempts_count')->default(0);
             $table->string('status')->nullable();
             $table->json('result')->nullable();
             $table->double('queued_at')->nullable();

@@ -11,6 +11,7 @@ use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Queue\Jobs\BeanstalkdJob;
 use Illuminate\Queue\Jobs\DatabaseJob;
+use Illuminate\Queue\Jobs\RedisJob;
 use Illuminate\Support\ServiceProvider;
 use Queue;
 
@@ -33,9 +34,8 @@ class JobsStatsServiceProvider extends ServiceProvider
                 $attempt = $event->job->attempts();
 
                 $jobsStatsJob->update([
-                    'attempts_count' => $attempt,
-                    'connection'     => $event->connectionName,
-                    'queue'          => $event->job->getQueue(),
+                    'connection' => $event->connectionName,
+                    'queue'      => $event->job->getQueue(),
                 ]);
 
                 $previousAttemptFinishedAt = null;
@@ -164,6 +164,6 @@ class JobsStatsServiceProvider extends ServiceProvider
         $job = $event->job;
 
         //@todo test with another queue drivers
-        return $job instanceof BeanstalkdJob || $job instanceof DatabaseJob;
+        return $job instanceof BeanstalkdJob || $job instanceof DatabaseJob || $job instanceof RedisJob;
     }
 }

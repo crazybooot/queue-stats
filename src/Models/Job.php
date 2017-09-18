@@ -1,6 +1,8 @@
 <?php
+
 namespace Crazybooot\JobsStats\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -20,18 +22,25 @@ class Job extends Model
     protected $fillable = [
         'uuid',
         'class',
-        'attempts_count',
+        'type',
         'connection',
         'queue',
         'status',
         'result',
-        'handling_duration',
-        'waiting_duration',
         'queued_at',
     ];
 
 
-    protected $casts = [];
+    protected $casts = [
+        'uuid'       => 'string',
+        'class'      => 'string',
+        'type'       => 'string',
+        'connection' => 'string',
+        'queue'      => 'string',
+        'status'     => 'string',
+        'result'     => 'array',
+        'queued_at'  => 'float',
+    ];
 
     /**
      * @return HasMany
@@ -39,5 +48,144 @@ class Job extends Model
     public function attempts()
     {
         return $this->hasMany(Attempt::class, 'jobs_stats_job_id', 'id');
+    }
+
+    /**
+     * @return float
+     */
+    public function getHandlingDurationAttribute()
+    {
+        return (float) $this->attempts()->sum('handling_duration');
+    }
+
+    /**
+     * @return float
+     */
+    public function getWaitingDurationAttribute()
+    {
+        return (float) $this->attempts()->sum('waiting_duration');
+    }
+
+    /**
+     * @return int
+     */
+    public function getAttemptsCountAttribute()
+    {
+        return $this->attempts()->count();
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeSuccess(Builder $builder)
+    {
+        return $builder->where('status', self::STATUS_SUCCESS);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeFailed(Builder $builder)
+    {
+        return $builder->where('status', self::STATUS_FAILED);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeNotHandled(Builder $builder)
+    {
+        return $builder->where('status', self::STATUS_NOT_HANDLED);
+    }
+
+    /**
+     * @param Builder $builder
+     * @param int $number
+     *
+     * @return Builder
+     */
+    public function scopeAttemptsCount(Builder $builder, $number)
+    {
+        return $builder->has('attempts', '=', $number);
+    }
+
+    /**
+     * @param Builder $builder
+     * @param string $type
+     *
+     * @return Builder
+     */
+    public function scopeType(Builder $builder, $type)
+    {
+        return $builder->where('type', $type);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeWithoutType(Builder $builder)
+    {
+        return $builder->whereNull('type');
+    }
+
+    /**
+     * @param Builder $builder
+     * @param string $class
+     *
+     * @return Builder
+     */
+    public function scopeClass(Builder $builder, $class)
+    {
+        return $builder->where('class', $class);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeWithResult(Builder $builder)
+    {
+        return $builder->whereNotNull('result');
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeWithoutResult(Builder $builder)
+    {
+        return $builder->whereNull('result');
+    }
+
+    /**
+     * @param Builder $builder
+     * @param string $queue
+     *
+     * @return Builder
+     */
+    public function scopeQueue(Builder $builder, $queue)
+    {
+        return $builder->where('queue', $queue);
+    }
+
+    /**
+     * @param Builder $builder
+     * @param string $connection
+     *
+     * @return Builder
+     */
+    public function scopeConnection(Builder $builder, $connection)
+    {
+        return $builder->where('connection', $connection);
     }
 }

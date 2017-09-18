@@ -1,4 +1,5 @@
 <?php
+
 namespace Crazybooot\JobsStats\Traits;
 
 use Crazybooot\JobsStats\Models\Job;
@@ -19,6 +20,11 @@ trait JobsStatsTrait
      * @var string
      */
     public $result;
+
+    /**
+     * @var string
+     */
+    public $type;
 
     /**
      *
@@ -54,6 +60,7 @@ trait JobsStatsTrait
         Job::create([
             'uuid'      => $this->uuid,
             'class'     => get_class($this),
+            'type'      => $this->type,
             'queued_at' => microtime(true),
             'status'    => Job::STATUS_NOT_HANDLED,
         ]);

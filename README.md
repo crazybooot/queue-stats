@@ -28,7 +28,7 @@ $ php artisn migrate
     ],
 ```
 
-5. Use JobsStatsTrait on jobs you want to collect statistics
+5. Use JobsStatsTrait on jobs models you want to collect statistics
 
 ``` php
 ...
@@ -42,27 +42,45 @@ class ExampleJob implementes ShouldQueue
 
 ## Using
 
-Get statistics about job:
+Get statistics about jobs:
 
 ``` php
 ...
 use Crazybooot\JobsStats\Models\Job;
 
 ...
-// count successfully handled jobs
-Job::where('status', Job::STATUS_FAILED)->count();
+// get failed jobs
+Job::failed()->get();
 
-// count failed hobs
-Job::where('status', Job::STATUS_SUCCESS)->count();
+// get success jobs
+Job::success()->get();
 
-// count jobs pushed to queue but not handled
-Job::where('status', Job::STATUS_NOT_HANDLED)->count();
+// get not handled jobs
+Job::notHandled()->get();
 
-// count job handled by one attempt
-Job::where('status', Job::STATUS_SUCCESS)->where('attempts_count', 1)->count();
+// get jobs handled on specified queue
+Job::queue('default')->get();
 
-// count job handled more by one attempt
-Job::where('status', Job::STATUS_SUCCESS)->where('attempts_count', '>' 1)->count(); 
+// get jobs on specified connection
+Job::connection('redis')->get();
+
+// get jobs with specified class
+Job::class(ExampleJob::class)->get();
+
+// get jobs with specified number of attempts
+Job::attemptsCount(3)->get();
+
+// get jobs which has result
+Job::withResult()->get();
+
+// get jobs which have no result
+Job::withoutResult()->get();
+
+// get jobs with specified type
+Job::type('custom_type')->get();
+
+// get jobs without type
+Job::withoutType()->get();
 ```
 
 You can get statistics about one job by using getUuid() method on job instance before dispatching job:
@@ -82,8 +100,16 @@ dispath($job);
 
 ...
 
-// check if job was handled successfully
-$isSuccess = Job::where('uuid', $uuid)->where('status', Job::STATUS_SUCCESS)->count() > 0;
+$jobStats = Job::where('uuid', $uuid)->first();
+
+// returns total job atempts waiting on queue duration in seconds
+$waitingDuration = $jobStats->getAttribute('waiting_duration');
+
+// returns total job atempts handling duration in seconds
+$handlingDuration = $jobStats->getAttribute('handling_duration);
+
+// return job attempts count
+$attemptsCount = $jobStats->getAttribute('attempts_count');
 ```
 You can add some job results to statistics passing array of data
 you want to save $this->saveResult().

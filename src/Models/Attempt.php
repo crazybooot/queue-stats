@@ -1,6 +1,8 @@
 <?php
+
 namespace Crazybooot\JobsStats\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -26,10 +28,20 @@ class Attempt extends Model
         'waiting_duration',
         'status',
         'exception_message',
-        'exception_call_stack'
+        'exception_call_stack',
     ];
 
-    protected $casts = [];
+    protected $casts = [
+        'jobs_stats_job_id'    => 'integer',
+        'attempt_number'       => 'integer',
+        'started_at'           => 'float',
+        'finished_at'          => 'float',
+        'handling_duration'    => 'float',
+        'waiting_duration'     => 'float',
+        'status'               => 'string',
+        'exception_message'    => 'string',
+        'exception_call_stack' => 'array',
+    ];
 
     /**
      * @return BelongsTo
@@ -37,5 +49,35 @@ class Attempt extends Model
     public function job()
     {
         return $this->belongsTo(Job::class, 'jobs_stats_job_id', 'id', 'jobs_stats_jobs');
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeStarted(Builder $builder)
+    {
+        return $builder->where('status', self::STATUS_STARTED);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeCompleted(Builder $builder)
+    {
+        return $builder->where('status', self::STATUS_COMPLETED);
+    }
+
+    /**
+     * @param Builder $builder
+     *
+     * @return Builder
+     */
+    public function scopeFailed(Builder $builder)
+    {
+        return $builder->where('status', self::STATUS_FAILED);
     }
 }
