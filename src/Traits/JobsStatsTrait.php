@@ -14,12 +14,7 @@ trait JobsStatsTrait
     /**
      * @var string
      */
-    public $uuid;
-
-    /**
-     * @var string
-     */
-    public $result;
+    protected $uuid;
 
     /**
      * @var string
@@ -27,11 +22,17 @@ trait JobsStatsTrait
     public $type;
 
     /**
-     *
+     * Create job stats job in database while pushing into queue
      */
     public function __clone()
     {
-        $this->registerJob();
+        Job::create([
+            'uuid'      => $this->getUuid(),
+            'class'     => get_class($this),
+            'type'      => $this->type,
+            'queued_at' => microtime(true),
+            'status'    => Job::STATUS_NOT_HANDLED,
+        ]);
     }
 
     /**
@@ -49,29 +50,11 @@ trait JobsStatsTrait
     }
 
     /**
-     * Register job to track stats
-     */
-    protected function registerJob()
-    {
-        if (null === $this->uuid) {
-            $this->uuid = uniqid('jobs_stats', true);
-        }
-
-        Job::create([
-            'uuid'      => $this->uuid,
-            'class'     => get_class($this),
-            'type'      => $this->type,
-            'queued_at' => microtime(true),
-            'status'    => Job::STATUS_NOT_HANDLED,
-        ]);
-    }
-
-    /**
      * @param array $result
      */
     protected function saveResult(array $result)
     {
-        Job::where('uuid', $this->uuid)->update([
+        Job::where('uuid', $this->getUuid())->update([
             'result' => json_encode($result),
         ]);
     }

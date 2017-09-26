@@ -2,9 +2,9 @@
 
 namespace Crazybooot\JobsStats\Providers;
 
+use Crazybooot\JobsStats\Interfaces\JobsStatsInterface;
 use Crazybooot\JobsStats\Models\Attempt;
 use Crazybooot\JobsStats\Models\Job;
-use Crazybooot\JobsStats\Traits\JobsStatsTrait;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
@@ -30,7 +30,7 @@ class JobsStatsServiceProvider extends ServiceProvider
         Queue::before(function (JobProcessing $event) {
             if ($this->isSupportedQueueDriver($event) && $this->isStatsEnabled($event)) {
                 $originalJob = $this->getOriginalJobObject($event);
-                $jobsStatsJob = Job::where('uuid', $originalJob->uuid)->latest()->first();
+                $jobsStatsJob = Job::where('uuid', $originalJob->getUuid())->latest()->first();
                 $attempt = $event->job->attempts();
 
                 $jobsStatsJob->update([
@@ -41,7 +41,10 @@ class JobsStatsServiceProvider extends ServiceProvider
                 $previousAttemptFinishedAt = null;
 
                 if ($attempt > 1) {
-                    $previousAttemptFinishedAt = $jobsStatsJob->attempts()->where('attempt_number', $attempt - 1)->value('finished_at');
+                    $previousAttemptFinishedAt = $jobsStatsJob
+                        ->attempts()
+                        ->where('attempt_number', $attempt - 1)
+                        ->value('finished_at');
                 } else {
                     $previousAttemptFinishedAt = $jobsStatsJob->getAttribute('queued_at');
                 }
@@ -62,11 +65,16 @@ class JobsStatsServiceProvider extends ServiceProvider
                 $now = microtime(true);
                 $originalJob = $this->getOriginalJobObject($event);
 
-                $jobsStatsJob = Job::where('uuid', $originalJob->uuid)->latest()->first();
+                $jobsStatsJob = Job::where('uuid', $originalJob->getUuid())->latest()->first();
+
                 $jobsStatsJob->update([
                     'status' => Job::STATUS_SUCCESS,
                 ]);
-                $jobsStatsJobTry = $jobsStatsJob->attempts()->where('status', Attempt::STATUS_STARTED)->latest()->first();
+
+                $jobsStatsJobTry = $jobsStatsJob->attempts()
+                    ->where('status', Attempt::STATUS_STARTED)
+                    ->latest()
+                    ->first();
 
                 if (null !== $jobsStatsJobTry) {
                     $jobsStatsJobTry->update([
@@ -82,12 +90,18 @@ class JobsStatsServiceProvider extends ServiceProvider
             if ($this->isSupportedQueueDriver($event) && $this->isStatsEnabled($event)) {
                 $now = microtime(true);
                 $originalJob = $this->getOriginalJobObject($event);
-                $uuid = $originalJob->uuid;
-                $jobsStatsJob = Job::where('uuid', $uuid)->latest()->first();
+                $jobsStatsJob = Job::where('uuid', $originalJob->getUuid())->latest()->first();
+
                 $jobsStatsJob->update([
                     'status' => Job::STATUS_FAILED,
                 ]);
-                $jobsStatsJobTry = $jobsStatsJob->attempts()->where('status', Attempt::STATUS_STARTED)->latest()->first();
+
+                $jobsStatsJobTry = $jobsStatsJob
+                    ->attempts()
+                    ->where('status', Attempt::STATUS_STARTED)
+                    ->latest()
+                    ->first();
+
                 if (null !== $jobsStatsJobTry) {
                     $jobsStatsJobTry->update([
                         'status'               => Attempt::STATUS_FAILED,
@@ -104,9 +118,14 @@ class JobsStatsServiceProvider extends ServiceProvider
             if ($this->isSupportedQueueDriver($event) && $this->isStatsEnabled($event)) {
                 $now = microtime(true);
                 $originalJob = $this->getOriginalJobObject($event);
-                $uuid = $originalJob->uuid;
-                $jobsStatsJob = Job::where('uuid', $uuid)->latest()->first();
-                $jobsStatsJobTry = $jobsStatsJob->attempts()->where('attempt_number', $event->job->attempts())->latest()->first();
+                $jobsStatsJob = Job::where('uuid', $originalJob->getUuid())->latest()->first();
+
+                $jobsStatsJobTry = $jobsStatsJob
+                    ->attempts()
+                    ->where('attempt_number', $event->job->attempts())
+                    ->latest()
+                    ->first();
+
                 if (null !== $jobsStatsJobTry) {
                     $jobsStatsJobTry->update([
                         'status'               => Attempt::STATUS_FAILED,
@@ -120,6 +139,7 @@ class JobsStatsServiceProvider extends ServiceProvider
         });
 
         $this->publishMigrations();
+        $this->loadRoutesFrom(__DIR__.'./../routes.php');
     }
 
     /**
@@ -151,7 +171,7 @@ class JobsStatsServiceProvider extends ServiceProvider
      */
     protected function isStatsEnabled($event)
     {
-        return in_array(JobsStatsTrait::class, class_uses($event->job->payload()['data']['commandName']), true);
+        return in_array(JobsStatsInterface::class, class_implements($event->job->payload()['data']['commandName']), true);
     }
 
     /**
