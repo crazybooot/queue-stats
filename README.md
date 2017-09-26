@@ -2,25 +2,12 @@ Laravel package for queued job statistics collecting
 
 ## Install
 
-1. Install composer package to your laravel project
-
+* Install composer package to your laravel project
 ``` bash
 $ composer require crazybooot/jobs-stats
 ```
 
-2. Publish migrations
-
-``` bash
-$ php artisan vendor:publish --tag=migrations
-```
-
-3. Run migrations
-
-``` bash
-$ php artisn migrate
-```
-
-4. Add service provider to config/app.php
+* Add service provider to config/app.php
 ``` php
     'providers' => [
         ...
@@ -28,13 +15,23 @@ $ php artisn migrate
     ],
 ```
 
-5. Use JobsStatsTrait on jobs models you want to collect statistics
+* Publish migrations
+``` bash
+$ php artisan vendor:publish --provider="Crazybooot\JobsStats\Providers\JobsStatsProvider" --tag="migrations"
+```
 
+* Run migrations
+``` bash
+$ php artisn migrate
+```
+
+* Use JobsStatsTrait and JobStatsInterface on jobs models you want to collect statistics
 ``` php
 ...
 use Crazybooot\JobsStats\Traits\JobsStatsTrait;
+use Crazybooot\JobsStats\Interfaces\JobsStatsInterface;
 
-class ExampleJob implementes ShouldQueue
+class ExampleJob implementes JobsStatsInterface, ShouldQueue
 {
     use JobsStatsTrait;
 }
@@ -140,4 +137,7 @@ class ExampleJob implementes ShouldQueue
 
 ## Requirements
 
-The following versions of PHP are supported by this version.
+* PHP: 5.6+
+* Laravel: 5+
+* Supported queue drivers: database, beanstalkd, redis
+
