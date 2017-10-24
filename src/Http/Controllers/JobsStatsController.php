@@ -15,12 +15,17 @@ use Illuminate\Http\JsonResponse;
  */
 class JobsStatsController extends Controller
 {
+    public function index()
+    {
+        return view('jobs-stats:app');
+    }
+
     /**
      * @param Request $request
      *
      * @return JsonResponse
      */
-    public function index(Request $request)
+    public function list(Request $request)
     {
         $column = 'jobs_stats_jobs.';
         $order = 'asc';

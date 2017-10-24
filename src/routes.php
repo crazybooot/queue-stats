@@ -9,4 +9,9 @@ Route::group([
         'as'   => '.index',
         'uses' => 'JobsStatsController@index',
     ]);
+
+    Route::get('/list', [
+        'as'   => '.list',
+        'uses' => 'JobsStatsController@list',
+    ]);
 });

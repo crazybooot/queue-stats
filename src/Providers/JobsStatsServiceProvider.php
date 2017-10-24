@@ -2,6 +2,7 @@
 
 namespace Crazybooot\JobsStats\Providers;
 
+use Crazybooot\JobsStats\Commands\InstallPackageCommand;
 use Crazybooot\JobsStats\Interfaces\JobsStatsInterface;
 use Crazybooot\JobsStats\Models\Attempt;
 use Crazybooot\JobsStats\Models\Job;
@@ -139,7 +140,22 @@ class JobsStatsServiceProvider extends ServiceProvider
         });
 
         $this->publishMigrations();
+        $this->publishAssets();
         $this->loadRoutesFrom(__DIR__.'./../routes.php');
+        $this->loadViewsFrom(__DIR__.'./../../resources/assets/views', 'jobs-stats');
+        $this->registerCommands();
+    }
+
+    /**
+     * Register bindings in the container.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->mergeConfigFrom(
+            __DIR__.'/../../config/jobs-stats.php', 'jobs-stats'
+        );
     }
 
     /**
@@ -150,6 +166,28 @@ class JobsStatsServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../../database/migrations/' => database_path('migrations'),
         ], 'migrations');
+    }
+
+    /**
+     * Publish package assets
+     */
+    protected function publishAssets()
+    {
+        $this->publishes([
+            __DIR__.'/../../resources/assets/js/app.js' => public_path('vendor/jobs-stats'),
+        ], 'public');
+    }
+
+    /**
+     * Register package commands
+     */
+    protected function registerCommands()
+    {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                InstallPackageCommand::class,
+            ]);
+        }
     }
 
     /**
