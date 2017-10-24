@@ -1,8 +1,5 @@
 <template>
     <div>
-        <select v-model="type">
-            <option v-for="type in types" value="type.id" v-text="type.name"></option>
-        </select>
         <highcharts :options="options"></highcharts>
     </div>
 </template>
@@ -11,17 +8,6 @@
     export default {
         data() {
             return {
-                type: '',
-                types: [
-                    {
-                        id: 1,
-                        name: 'durations'
-                    },
-                    {
-                        id: 2,
-                        name: 'attempts'
-                    }
-                ],
                 options: {
                     title: {
                         text: 'Jobs durations statistics'

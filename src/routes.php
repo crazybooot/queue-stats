@@ -14,4 +14,19 @@ Route::group([
         'as'   => '.list',
         'uses' => 'JobsStatsController@list',
     ]);
+
+    Route::get('/chart', [
+        'as'   => '.chart',
+        'uses' => 'JobsStatsController@chart',
+    ]);
+
+    Route::get('/stats', [
+        'as'   => '.stats',
+        'uses' => 'JobsStatsController@stats',
+    ]);
+
+    Route::get('/config', [
+        'as'   => '.config',
+        'uses' => 'JobsStatsController@config',
+    ]);
 });

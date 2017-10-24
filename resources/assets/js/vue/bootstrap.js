@@ -1,4 +1,3 @@
-import Vue from 'vue'
 
 window._ = require('lodash');
 
@@ -18,7 +17,7 @@ require('bootstrap-sass');
  * and simple, leaving you to focus on building your next great project.
  */
 
-window.Vue = Vue;
+window.Vue = require('vue');
 
 /**
  * We'll load the axios HTTP library which allows us to easily issue requests

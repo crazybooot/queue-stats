@@ -3,94 +3,113 @@
         <vuetable ref="vuetable"
                   :fields="settings.fields"
                   :api-url="settings.apiUrl"
-                  :css="css"
+                  :css="settings.css"
                   pagination-path=""
                   detail-row-component="job"
                   @vuetable:cell-clicked="onCellClicked"
                   @vuetable:pagination-data="onPaginationData">
         </vuetable>
-            <vuetable-pagination ref="pagination"
-                                 @vuetable-pagination:change-page="onChangePage"></vuetable-pagination>
+        <vuetable-pagination-bootstrap ref="pagination"
+                                       @vuetable-pagination:change-page="onChangePage"></vuetable-pagination-bootstrap>
     </div>
 </template>
 
 <script>
-    import Vuetable from 'vuetable-2/src/components/Vuetable.vue'
-    import VuetablePagination from 'vuetable-2/src/components/VuetablePagination.vue'
-    import Job from './Job.vue'
-
-    Vue.component('job', Job);
-
     export default {
-        components: {
-            Vuetable,
-            VuetablePagination
-        },
         data() {
             return {
                 settings: {
                     fields: [
                         {
-                            name: 'uuid',
-                            title: 'uuid',
-                            sortField: 'uuid'
-                        },
-                        {
                             name: 'class',
                             title: 'class',
-                            sortField: 'class'
+                            sortField: 'jobs_stats_jobs.class',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
                         },
                         {
                             name: 'connection',
                             title: 'connection',
-                            sortField: 'connection'
+                            sortField: 'jobs_stats_jobs.connection',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
                         },
                         {
                             name: 'queue',
                             title: 'queue',
-                            sortField: 'queue'
-                        },
-                        {
-                            name: 'type',
-                            title: 'type',
-                            sortField: 'type'
+                            sortField: 'queue',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
                         },
                         {
                             name: 'status',
                             title: 'status',
-                            sortField: 'status'
+                            sortField: 'jobs_stats_jobs.status',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'delay',
+                            title: 'delay',
+                            sortField: 'jobs_stats_jobs.delay',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'tries',
+                            title: 'tries',
+                            sortField: 'tjobs_stats_jobs.ries',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'timeout',
+                            title: 'timeout',
+                            sortField: 'jobs_stats_jobs.timeout',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
                         },
                         {
                             name: 'handling_duration',
                             title: 'handling duration',
-                            sortField: 'handling_duration'
+                            sortField: 'handling_duration',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
                         },
                         {
                             name: 'waiting_duration',
                             title: 'waiting duration',
-                            sortField: 'waiting_duration'
+                            sortField: 'waiting_duration',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
                         },
                         {
                             name: 'attempts_count',
                             title: 'attempts',
-                            sortField: 'attempts_count'
+                            sortField: 'attempts_count',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
                         },
                         {
                             name: 'result',
                             title: 'result',
-                            sortField: 'result'
+                            sortField: 'jobs_stats_jobs.result',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
                         },
                         {
                             name: 'created_at',
                             title: 'created at',
-                            sortField: 'created_at'
+                            sortField: 'jobs_stats_jobs.created_at',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
                         },
                     ],
-                    css: {
-                        ascendingIcon: 'glyphicon glyphicon-chevron-up',
-                        descendingIcon: 'glyphicon glyphicon-chevron-down'
-                    },
                     apiUrl: '/jobs-stats/list',
+                    css: {
+                        tableClass: 'table table-responsive table-hover table-bordered',
+                        loadingClass: 'loading',
+                    }
                 }
             }
         },
@@ -101,7 +120,7 @@
             onChangePage(page) {
                 this.$refs.vuetable.changePage(page);
             },
-            onCellClicked (data, field, event) {
+            onCellClicked(data, field, event) {
                 this.$refs.vuetable.toggleDetailRow(data.id)
             }
         }

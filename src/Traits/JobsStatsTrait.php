@@ -26,13 +26,19 @@ trait JobsStatsTrait
      */
     public function __clone()
     {
-        Job::create([
-            'uuid'      => $this->getUuid(),
-            'class'     => get_class($this),
-            'type'      => $this->type,
-            'queued_at' => microtime(true),
-            'status'    => Job::STATUS_NOT_HANDLED,
-        ]);
+        if (config('jobs-stats.enabled')) {
+            Job::create([
+                'uuid'       => $this->getUuid(),
+                'class'      => get_class($this),
+                'queued_at'  => microtime(true),
+                'status'     => Job::STATUS_NOT_HANDLED,
+                'connection' => $this->connection ?? null,
+                'queue'      => $this->queue ?? null,
+                'delay'      => $this->delay ?? null,
+                'tries'      => $this->tries ?? null,
+                'timeout'    => $this->timeout ?? null,
+            ]);
+        }
     }
 
     /**

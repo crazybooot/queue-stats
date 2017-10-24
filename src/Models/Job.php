@@ -22,24 +22,28 @@ class Job extends Model
     protected $fillable = [
         'uuid',
         'class',
-        'type',
-        'connection',
-        'queue',
         'status',
         'result',
         'queued_at',
+        'connection',
+        'queue',
+        'delay',
+        'tries',
+        'timeout',
     ];
 
 
     protected $casts = [
         'uuid'       => 'string',
         'class'      => 'string',
-        'type'       => 'string',
-        'connection' => 'string',
-        'queue'      => 'string',
         'status'     => 'string',
         'result'     => 'array',
         'queued_at'  => 'float',
+        'connection' => 'string',
+        'queue'      => 'string',
+        'delay'      => 'integer',
+        'tries'      => 'integer',
+        'timeout'    => 'integer',
     ];
 
     /**
@@ -113,27 +117,6 @@ class Job extends Model
     public function scopeAttemptsCount(Builder $builder, $number)
     {
         return $builder->has('attempts', '=', $number);
-    }
-
-    /**
-     * @param Builder $builder
-     * @param string $type
-     *
-     * @return Builder
-     */
-    public function scopeType(Builder $builder, $type)
-    {
-        return $builder->where('type', $type);
-    }
-
-    /**
-     * @param Builder $builder
-     *
-     * @return Builder
-     */
-    public function scopeWithoutType(Builder $builder)
-    {
-        return $builder->whereNull('type');
     }
 
     /**

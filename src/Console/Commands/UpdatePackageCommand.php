@@ -7,25 +7,25 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
 /**
- * Class InstallPackageCommand
+ * Class UpdatePackageCommand
  *
  * @package Crazybooot\JobsStats\Commands
  */
-class InstallPackageCommand extends Command
+class UpdatePackageCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'jobs-stats:install';
+    protected $signature = 'jobs-stats:update';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Install Jobs Stats package';
+    protected $description = 'Update Jobs Stats package';
 
     /**
      * Execute the console command.
@@ -34,15 +34,6 @@ class InstallPackageCommand extends Command
      */
     public function handle()
     {
-        Artisan::call('vendor:publish', [
-            '--provider' => JobsStatsServiceProvider::class,
-            '--tag'      => 'migrations',
-        ]);
-
-        Artisan::call('migrate', [
-            '--force' => true,
-        ]);
-
         Artisan::call('vendor:publish', [
             '--provider' => JobsStatsServiceProvider::class,
             '--tag'      => 'public',
