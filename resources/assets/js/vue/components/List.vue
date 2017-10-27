@@ -84,9 +84,23 @@
                             dataClass: 'text-center',
                         },
                         {
+                            name: 'queries_duration',
+                            title: 'queries duration',
+                            sortField: 'queries_duration',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
                             name: 'attempts_count',
                             title: 'attempts',
                             sortField: 'attempts_count',
+                            titleClass: 'text-center',
+                            dataClass: 'text-center',
+                        },
+                        {
+                            name: 'queries_count',
+                            title: 'queries',
+                            sortField: 'queries_count',
                             titleClass: 'text-center',
                             dataClass: 'text-center',
                         },

@@ -38,6 +38,10 @@
                         {
                             name: 'Waiting duration',
                             data: []
+                        },
+                        {
+                            name: 'Queries duration',
+                            data: []
                         }
                     ],
 
@@ -62,8 +66,9 @@
         created() {
             axios.get('jobs-stats/chart')
                 .then(response => {
-                    this.options.series[0].data = response.data.handling_durations;
-                    this.options.series[1].data = response.data.waiting_durations;
+                    this.options.series[0].data = response.data.handling_duration;
+                    this.options.series[1].data = response.data.waiting_duration;
+                    this.options.series[2].data = response.data.queries_duration;
                     this.options.xAxis.categories = response.data.classes;
                 })
         }

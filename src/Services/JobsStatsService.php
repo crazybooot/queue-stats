@@ -12,6 +12,7 @@ use Crazybooot\JobsStats\Models\Job;
 use Illuminate\Queue\Jobs\BeanstalkdJob;
 use Illuminate\Queue\Jobs\DatabaseJob;
 use Illuminate\Queue\Jobs\RedisJob;
+use DB;
 
 /**
  * Class JobsStatsService
@@ -54,6 +55,11 @@ class JobsStatsService
                 'started_at'       => $now,
                 'waiting_duration' => $now - (float) $previousAttemptFinishedAt,
             ]);
+
+            if (config('jobs-stats.queries')) {
+                DB::flushQueryLog();
+                DB::enableQueryLog();
+            }
         }
     }
 
@@ -63,6 +69,12 @@ class JobsStatsService
     public static function handleQueueAfterEvent(JobProcessed $event)
     {
         if (static::isSupportedQueueDriver($event) && static::isStatsEnabled($event)) {
+            $queries = null;
+            if (config('jobs-stats.queries')) {
+                DB::disableQueryLog();
+                $queries = collect(DB::getQueryLog());
+            }
+
             $now = microtime(true);
             $originalJob = static::getOriginalJobObject($event);
 
@@ -82,6 +94,8 @@ class JobsStatsService
                     'status'            => Attempt::STATUS_COMPLETED,
                     'finished_at'       => $now,
                     'handling_duration' => $now - $jobsStatsJobTry->getAttribute('started_at'),
+                    'queries_count'     => null !== $queries ? $queries->count() : null,
+                    'queries_duration'  => null !== $queries ? $queries->sum('time') : null,
                 ]);
             }
         }
@@ -125,6 +139,12 @@ class JobsStatsService
     public static function handleQueueExceptionOccurredEvent(JobExceptionOccurred $event)
     {
         if (static::isSupportedQueueDriver($event) && static::isStatsEnabled($event)) {
+            $queries = null;
+            if (config('jobs-stats.queries')) {
+                DB::disableQueryLog();
+                $queries = collect(DB::getQueryLog());
+            }
+
             $now = microtime(true);
             $originalJob = static::getOriginalJobObject($event);
             $jobsStatsJob = Job::where('uuid', $originalJob->getUuid())->latest()->first();
@@ -142,6 +162,8 @@ class JobsStatsService
                     'exception_message'    => $event->exception->getMessage(),
                     'exception_call_stack' => json_encode($event->exception->getTrace()),
                     'handling_duration'    => $now - $jobsStatsJobTry->getAttribute('started_at'),
+                    'queries_count'        => null !== $queries ? $queries->count() : null,
+                    'queries_duration'     => null !== $queries ? $queries->sum('time') : null,
                 ]);
             }
         }

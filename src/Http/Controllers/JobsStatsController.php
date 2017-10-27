@@ -44,7 +44,9 @@ class JobsStatsController extends Controller
                 'jobs_stats_jobs.*',
                 DB::raw('count(jobs_stats_job_attempts.id) as attempts_count'),
                 DB::raw('ROUND(SUM(jobs_stats_job_attempts.handling_duration)) as handling_duration'),
-                DB::raw('ROUND(SUM(jobs_stats_job_attempts.waiting_duration)) as waiting_duration')
+                DB::raw('ROUND(SUM(jobs_stats_job_attempts.waiting_duration)) as waiting_duration'),
+                DB::raw('ROUND(SUM(jobs_stats_job_attempts.queries_count)) as queries_count'),
+                DB::raw('SUM(jobs_stats_job_attempts.queries_duration)/1000 as queries_duration')
             )
             ->groupBy('jobs_stats_jobs.id')
             ->when(
@@ -67,7 +69,7 @@ class JobsStatsController extends Controller
      */
     public function chart()
     {
-        $waitingDurations = DB::table('jobs_stats_jobs')
+        $waitingDuration = DB::table('jobs_stats_jobs')
             ->join(
                 'jobs_stats_job_attempts',
                 'jobs_stats_jobs.id',
@@ -83,7 +85,7 @@ class JobsStatsController extends Controller
             ->get()
             ->pluck('waiting_duration');
 
-        $handlingDurations = DB::table('jobs_stats_jobs')
+        $handlingDuration = DB::table('jobs_stats_jobs')
             ->join(
                 'jobs_stats_job_attempts',
                 'jobs_stats_jobs.id',
@@ -99,18 +101,37 @@ class JobsStatsController extends Controller
             ->get()
             ->pluck('handling_duration');
 
+        $queriesDuration = DB::table('jobs_stats_jobs')
+            ->join(
+                'jobs_stats_job_attempts',
+                'jobs_stats_jobs.id',
+                '=',
+                'jobs_stats_job_attempts.jobs_stats_job_id'
+            )
+            ->select(
+                'jobs_stats_jobs.id',
+                DB::raw('SUM(jobs_stats_job_attempts.queries_duration)/1000 as queries_duration')
+            )
+            ->groupBy('jobs_stats_jobs.id')
+            ->orderBy('jobs_stats_jobs.id')
+            ->get()
+            ->pluck('queries_duration');
+
         return response()->json([
-            'waiting_durations'  => $waitingDurations,
-            'handling_durations' => $handlingDurations,
+            'waiting_duration'  => $waitingDuration,
+            'handling_duration' => $handlingDuration,
+            'queries_duration'  => $queriesDuration,
         ]);
     }
 
     /**
      *
      */
-    public function workers()
+    public function workers(): JsonResponse
     {
-        exec('ps -eo | grep "php artisan queue:work"');
+        $workers = exec('ps -eo | grep "php artisan queue:work"');
+
+        return response()->json($workers);
     }
 
     /**
