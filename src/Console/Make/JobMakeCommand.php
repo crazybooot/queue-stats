@@ -2,14 +2,14 @@
 
 namespace Crazybooot\JobsStats\Make;
 
-use Illuminate\Foundation\Console\JobMakeCommand as IlluminateJobMakeCommand;
+use Illuminate\Foundation\Console\JobMakeCommand;
 
 /**
- * Class JobMakeCommand
+ * Class StatJobMakeCommand
  * 
  * @package Crazybooot\JobsStats\Providers
  */
-class JobMakeCommand extends IlluminateJobMakeCommand
+class StatJobMakeCommand extends JobMakeCommand
 {
     /**
      * Get the stub file for the generator.
