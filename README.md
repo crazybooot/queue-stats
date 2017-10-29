@@ -36,15 +36,8 @@ class ExampleJob implementes JobsStatsInterface, ShouldQueue
     use JobsStatsTrait;
 }
 ```
-* As well you can use extended artisan command to generate job with JobsStatsTrait and JobStatsInterface
+* As well you can use extended artisan command to generate job with JobsStatsTrait and JobStatsInterface. Just add StatJobMakeComand command to the app/Console/Kernel.php.
 ``` php
-// \App\Console\Kernel.php
-    ...
-    /**
-     * The Artisan commands provided by your application.
-     *
-     * @var array
-     */
     protected $commands = [
         ...
         Crazybooot\JobsStats\Make\StatJobMakeCommand::class
