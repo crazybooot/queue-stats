@@ -4,6 +4,11 @@ namespace Crazybooot\JobsStats\Make;
 
 use Illuminate\Foundation\Console\JobMakeCommand as IlluminateJobMakeCommand;
 
+/**
+ * Class JobMakeCommand
+ * 
+ * @package Crazybooot\JobsStats\Providers
+ */
 class JobMakeCommand extends IlluminateJobMakeCommand
 {
     /**

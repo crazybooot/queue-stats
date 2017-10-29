@@ -9,11 +9,21 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {},
+    "require": {
+        "illuminate/console": "5.*",
+        "illuminate/support": "5.*"
+    },
     "autoload": {
         "psr-4": {
             "App\\": "app/",
             "Crazybooot\\JobsStats\\": "/src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Crazybooot\\JobsStats\\Providers\\JobsStatsServiceProvider"
+            ]
         }
     }
 }
