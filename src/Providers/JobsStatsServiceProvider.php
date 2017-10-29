@@ -4,6 +4,7 @@ namespace Crazybooot\JobsStats\Providers;
 
 use Crazybooot\JobsStats\Commands\InstallPackageCommand;
 use Crazybooot\JobsStats\Commands\UpdatePackageCommand;
+use Crazybooot\JobsStats\Make\JobMakeCommand;
 use Crazybooot\JobsStats\Services\JobsStatsService;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
@@ -90,6 +91,7 @@ class JobsStatsServiceProvider extends ServiceProvider
             $this->commands([
                 InstallPackageCommand::class,
                 UpdatePackageCommand::class,
+                JobMakeCommand::class,
             ]);
         }
     }

@@ -9,7 +9,7 @@ use Crazybooot\JobsStats\Interfaces\JobsStatsInterface;
 
 class DummyClass implementes JobsStatsInterface
 {
-    use Dispatchable, Queueable;
+    use Dispatchable, Queueable, JobsStatsTrait;
 
     /**
      * Create a new job instance.
