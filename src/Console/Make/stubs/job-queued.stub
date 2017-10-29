@@ -10,7 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Crazybooot\JobsStats\Traits\JobsStatsTrait;
 use Crazybooot\JobsStats\Interfaces\JobsStatsInterface;
 
-class DummyClass implementes JobsStatsInterface, ShouldQueue
+class DummyClass implements JobsStatsInterface, ShouldQueue
 {
     use Dispatchable,
         InteractsWithQueue,
