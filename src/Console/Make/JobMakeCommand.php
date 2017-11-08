@@ -1,13 +1,13 @@
 <?php
 
-namespace Crazybooot\JobsStats\Make;
+namespace Crazybooot\QueueStats\Make;
 
 use Illuminate\Foundation\Console\JobMakeCommand;
 
 /**
  * Class StatJobMakeCommand
  * 
- * @package Crazybooot\JobsStats\Providers
+ * @package Crazybooot\QueueStats\Providers
  */
 class StatJobMakeCommand extends JobMakeCommand
 {

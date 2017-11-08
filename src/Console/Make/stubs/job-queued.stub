@@ -7,16 +7,16 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Crazybooot\JobsStats\Traits\JobsStatsTrait;
-use Crazybooot\JobsStats\Interfaces\JobsStatsInterface;
+use Crazybooot\QueueStats\Traits\QueueStatsTrait;
+use Crazybooot\QueueStats\Interfaces\QueueStatsInterface;
 
-class DummyClass implements JobsStatsInterface, ShouldQueue
+class DummyClass implements QueueStatsInterface, ShouldQueue
 {
     use Dispatchable,
         InteractsWithQueue,
         Queueable,
         SerializesModels,
-        JobsStatsTrait;
+        QueueStatsTrait;
 
     /**
      * Create a new job instance.

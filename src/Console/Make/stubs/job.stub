@@ -4,12 +4,12 @@ namespace DummyNamespace;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Crazybooot\JobsStats\Traits\JobsStatsTrait;
-use Crazybooot\JobsStats\Interfaces\JobsStatsInterface;
+use Crazybooot\QueueStats\Traits\QueueStatsTrait;
+use Crazybooot\QueueStats\Interfaces\QueueStatsInterface;
 
-class DummyClass implements JobsStatsInterface
+class DummyClass implements QueueStatsInterface
 {
-    use Dispatchable, Queueable, JobsStatsTrait;
+    use Dispatchable, Queueable, QueueStatsTrait;
 
     /**
      * Create a new job instance.

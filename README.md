@@ -4,20 +4,20 @@ Laravel package for queued job statistics collecting
 
 * Install composer package to your laravel project
 ``` bash
-$ composer require crazybooot/jobs-stats
+$ composer require crazybooot/queue-stats
 ```
 
 * Add service provider to config/app.php
 ``` php
     'providers' => [
         ...
-        Crazybooot\JobsStats\Providers\JobsStatsServiceProvider::class,
+        Crazybooot\QueueStats\Providers\QueueStatsServiceProvider::class,
     ],
 ```
 
 * Publish migrations
 ``` bash
-$ php artisan vendor:publish --provider="Crazybooot\JobsStats\Providers\JobsStatsProvider" --tag="migrations"
+$ php artisan vendor:publish --provider="Crazybooot\QueueStats\Providers\QueueStatsServiceProvider" --tag="migrations"
 ```
 
 * Run migrations
@@ -25,22 +25,22 @@ $ php artisan vendor:publish --provider="Crazybooot\JobsStats\Providers\JobsStat
 $ php artisn migrate
 ```
 
-* Use JobsStatsTrait and JobStatsInterface on jobs models you want to collect statistics
+* Use QueueStatsTrait and QueueStatsInterface on jobs models you want to collect statistics
 ``` php
 ...
-use Crazybooot\JobsStats\Traits\JobsStatsTrait;
-use Crazybooot\JobsStats\Interfaces\JobsStatsInterface;
+use Crazybooot\QueueStats\Traits\QueueStatsTrait;
+use Crazybooot\QueueStats\Interfaces\QueueStatsInterface;
 
-class ExampleJob implementes JobsStatsInterface, ShouldQueue
+class ExampleJob implementes QueueStatsInterface, ShouldQueue
 {
-    use JobsStatsTrait;
+    use QueueStatsTrait;
 }
 ```
-* As well you can use extended artisan command to generate job with JobsStatsTrait and JobStatsInterface. Just add `StatJobMakeCommand` command to the `app/Console/Kernel.php`. `php artisan make:job` would be override by this command.
+* As well you can use extended artisan command to generate job with QueueStatsTrait and QueueStatsInterface. Just add `StatJobMakeCommand` command to the `app/Console/Kernel.php`. `php artisan make:job` would be override by this command.
 ``` php
     protected $commands = [
         ...
-        Crazybooot\JobsStats\Make\StatJobMakeCommand::class
+        Crazybooot\QueueStats\Make\StatJobMakeCommand::class
     ];
 ```
 
@@ -50,7 +50,7 @@ Get statistics about jobs:
 
 ``` php
 ...
-use Crazybooot\JobsStats\Models\Job;
+use Crazybooot\QueueStats\Models\Job;
 
 ...
 // get failed jobs
@@ -90,7 +90,7 @@ Job::withoutType()->get();
 You can get statistics about one job by using getUuid() method on job instance before dispatching job:
 ``` php
 ...
-use Crazybooot\JobsStats\Models\Job;
+use Crazybooot\QueueStats\Models\Job;
 use App\Job\ExampleJob;
 
 ...
@@ -120,11 +120,11 @@ you want to save $this->saveResult().
 Result will be stored in database in json format what allows to query
 more complex data with Eloquent or Query Builder.
 ``` php
-use Crazybooot\JobsStats\Traits\JobsStatsTrait;
+use Crazybooot\QueueStats\Traits\QueueStatsTrait;
 
 class ExampleJob implementes ShouldQueue
 {
-    use JobsStatsTrait;
+    use QueueStatsTrait;
     
     ...
     
@@ -144,7 +144,7 @@ class ExampleJob implementes ShouldQueue
 
 ## Requirements
 
-* PHP: 5.6+
-* Laravel: 5+
+* PHP: 7.0+
+* Laravel: 5.5
 * Supported queue drivers: database, beanstalkd, redis
 
