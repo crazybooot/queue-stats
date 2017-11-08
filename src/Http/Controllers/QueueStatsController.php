@@ -1,24 +1,24 @@
 <?php
 declare(strict_types = 1);
 
-namespace Crazybooot\JobsStats\Http\Controllers;
+namespace Crazybooot\QueueStats\Http\Controllers;
 
 use DB;
-use Crazybooot\JobsStats\Models\Job;
+use Crazybooot\QueueStats\Models\Job;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 /**
- * Class JobsStatsController
+ * Class QueueStatsController
  *
- * @package Crazybooot\JobsStats\Http\Controllers
+ * @package Crazybooot\QueueStats\Http\Controllers
  */
-class JobsStatsController extends Controller
+class QueueStatsController extends Controller
 {
     public function index()
     {
-        return view('jobs-stats::app');
+        return view('queue-stats::app');
     }
 
     /**
@@ -28,28 +28,28 @@ class JobsStatsController extends Controller
      */
     public function list(Request $request)
     {
-        $column = 'jobs_stats_jobs.id';
+        $column = 'queue_stats_jobs.id';
         $order = 'asc';
 
-        if ($request->has('sort')) {
+        if ($request->filled('sort')) {
             [$column, $order] = explode('|', $request->input('sort'));
         }
 
         $jobs = Job::join(
-            'jobs_stats_job_attempts',
-            'jobs_stats_jobs.id',
+            'queue_stats_job_attempts',
+            'queue_stats_jobs.id',
             '=',
-            'jobs_stats_job_attempts.jobs_stats_job_id'
+            'queue_stats_job_attempts.job_id'
         )
             ->select(
-                'jobs_stats_jobs.*',
-                DB::raw('count(jobs_stats_job_attempts.id) as attempts_count'),
-                DB::raw('ROUND(SUM(jobs_stats_job_attempts.handling_duration)) as handling_duration'),
-                DB::raw('ROUND(SUM(jobs_stats_job_attempts.waiting_duration)) as waiting_duration'),
-                DB::raw('ROUND(SUM(jobs_stats_job_attempts.queries_count)) as queries_count'),
-                DB::raw('SUM(jobs_stats_job_attempts.queries_duration)/1000 as queries_duration')
+                'queue_stats_jobs.*',
+                DB::raw('COUNT(queue_stats_job_attempts.id) as attempts_count'),
+                DB::raw('ROUND(SUM(queue_stats_job_attempts.handling_duration)) as handling_duration'),
+                DB::raw('ROUND(SUM(queue_stats_job_attempts.waiting_duration)) as waiting_duration'),
+                DB::raw('ROUND(SUM(queue_stats_job_attempts.queries_count)) as queries_count'),
+                DB::raw('SUM(queue_stats_job_attempts.queries_duration)/1000 as queries_duration')
             )
-            ->groupBy('jobs_stats_jobs.id')
+            ->groupBy('queue_stats_jobs.id')
             ->when(
                 $order === 'asc',
                 function ($query) use ($column) {
@@ -58,7 +58,7 @@ class JobsStatsController extends Controller
                 function ($query) use ($column) {
                     $query->orderByDesc($column);
                 })
-            ->orderBy('jobs_stats_jobs.id')
+            ->orderBy('queue_stats_jobs.id')
             ->with('attempts')
             ->paginate(20);
 
@@ -70,51 +70,51 @@ class JobsStatsController extends Controller
      */
     public function chart()
     {
-        $waitingDuration = DB::table('jobs_stats_jobs')
+        $waitingDuration = DB::table('queue_stats_jobs')
             ->join(
-                'jobs_stats_job_attempts',
-                'jobs_stats_jobs.id',
+                'queue_stats_job_attempts',
+                'queue_stats_jobs.id',
                 '=',
-                'jobs_stats_job_attempts.jobs_stats_job_id'
+                'queue_stats_job_attempts.job_id'
             )
             ->select(
-                'jobs_stats_jobs.id',
-                DB::raw('SUM(jobs_stats_job_attempts.waiting_duration) as waiting_duration')
+                'queue_stats_jobs.id',
+                DB::raw('SUM(queue_stats_job_attempts.waiting_duration) as waiting_duration')
             )
-            ->groupBy('jobs_stats_jobs.id')
-            ->orderBy('jobs_stats_jobs.id')
+            ->groupBy('queue_stats_jobs.id')
+            ->orderBy('queue_stats_jobs.id')
             ->get()
             ->pluck('waiting_duration');
 
-        $handlingDuration = DB::table('jobs_stats_jobs')
+        $handlingDuration = DB::table('queue_stats_jobs')
             ->join(
-                'jobs_stats_job_attempts',
-                'jobs_stats_jobs.id',
+                'queue_stats_job_attempts',
+                'queue_stats_jobs.id',
                 '=',
-                'jobs_stats_job_attempts.jobs_stats_job_id'
+                'queue_stats_job_attempts.job_id'
             )
             ->select(
-                'jobs_stats_jobs.id',
-                DB::raw('SUM(jobs_stats_job_attempts.handling_duration) as handling_duration')
+                'queue_stats_jobs.id',
+                DB::raw('SUM(queue_stats_job_attempts.handling_duration) as handling_duration')
             )
-            ->groupBy('jobs_stats_jobs.id')
-            ->orderBy('jobs_stats_jobs.id')
+            ->groupBy('queue_stats_jobs.id')
+            ->orderBy('queue_stats_jobs.id')
             ->get()
             ->pluck('handling_duration');
 
-        $queriesDuration = DB::table('jobs_stats_jobs')
+        $queriesDuration = DB::table('queue_stats_jobs')
             ->join(
-                'jobs_stats_job_attempts',
-                'jobs_stats_jobs.id',
+                'queue_stats_job_attempts',
+                'queue_stats_jobs.id',
                 '=',
-                'jobs_stats_job_attempts.jobs_stats_job_id'
+                'queue_stats_job_attempts.job_id'
             )
             ->select(
-                'jobs_stats_jobs.id',
-                DB::raw('SUM(jobs_stats_job_attempts.queries_duration)/1000 as queries_duration')
+                'queue_stats_jobs.id',
+                DB::raw('SUM(queue_stats_job_attempts.queries_duration)/1000 as queries_duration')
             )
-            ->groupBy('jobs_stats_jobs.id')
-            ->orderBy('jobs_stats_jobs.id')
+            ->groupBy('queue_stats_jobs.id')
+            ->orderBy('queue_stats_jobs.id')
             ->get()
             ->pluck('queries_duration');
 
@@ -140,7 +140,7 @@ class JobsStatsController extends Controller
      */
     public function stats()
     {
-        $jobs = DB::table('jobs_stats_jobs')
+        $jobs = DB::table('queue_stats_jobs')
             ->select(
                 DB::raw('SUM(IF(status="'.Job::STATUS_FAILED.'", 1, 0)) as failed'),
                 DB::raw('SUM(IF(status="'.Job::STATUS_SUCCESS.'", 1, 0)) as success'),

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Crazybooot\JobsStats\Models;
+namespace Crazybooot\QueueStats\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * Class Job
  *
- * @package Crazybooot\JobsStats\Models
+ * @package Crazybooot\QueueStats\Models
  */
 class Job extends Model
 {
@@ -18,7 +18,7 @@ class Job extends Model
     const STATUS_SUCCESS = 'STATUS_SUCCESS';
     const STATUS_FAILED = 'STATUS_FAILED';
 
-    protected $table = 'jobs_stats_jobs';
+    protected $table = 'queue_stats_jobs';
 
     protected $fillable = [
         'uuid',
@@ -52,7 +52,7 @@ class Job extends Model
      */
     public function attempts()
     {
-        return $this->hasMany(Attempt::class, 'jobs_stats_job_id', 'id');
+        return $this->hasMany(Attempt::class, 'job_id', 'id');
     }
 
     /**

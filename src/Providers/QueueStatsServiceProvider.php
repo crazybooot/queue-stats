@@ -1,11 +1,11 @@
 <?php
 declare(strict_types = 1);
 
-namespace Crazybooot\JobsStats\Providers;
+namespace Crazybooot\QueueStats\Providers;
 
-use Crazybooot\JobsStats\Commands\InstallPackageCommand;
-use Crazybooot\JobsStats\Commands\UpdatePackageCommand;
-use Crazybooot\JobsStats\Services\JobsStatsService;
+use Crazybooot\QueueStats\Commands\InstallPackageCommand;
+use Crazybooot\QueueStats\Commands\UpdatePackageCommand;
+use Crazybooot\QueueStats\Services\JobsStatsService;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
@@ -13,40 +13,42 @@ use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Support\ServiceProvider;
 use Queue;
 
+use function config, database_path, public_path;
+
 /**
- * Class JobsStatsServiceProvider
+ * Class QueueStatsServiceProvider
  *
- * @package Crazybooot\JobsStats\Providers
+ * @package Crazybooot\QueueStats\Providers
  */
-class JobsStatsServiceProvider extends ServiceProvider
+class QueueStatsServiceProvider extends ServiceProvider
 {
     /**
      *
      */
     public function boot()
     {
-        if (config('jobs-stats.enabled')) {
+        if (config('queue-stats.enabled')) {
             Queue::before(function (JobProcessing $event) {
-                JobsStatsService::handleQueueBeforeEvent($event);
+                QueueStatsService::handleQueueBeforeEvent($event);
             });
 
             Queue::after(function (JobProcessed $event) {
-                JobsStatsService::handleQueueAfterEvent($event);
+                QueueStatsService::handleQueueAfterEvent($event);
             });
 
             Queue::failing(function (JobFailed $event) {
-                JobsStatsService::handleQueueFailingEvent($event);
+                QueueStatsService::handleQueueFailingEvent($event);
             });
 
             Queue::exceptionOccurred(function (JobExceptionOccurred $event) {
-                JobsStatsService::handleQueueExceptionOccurredEvent($event);
+                QueueStatsService::handleQueueExceptionOccurredEvent($event);
             });
         }
 
         $this->publishMigrations();
         $this->publishAssets();
         $this->loadRoutesFrom(__DIR__.'./../routes.php');
-        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'jobs-stats');
+        $this->loadViewsFrom(__DIR__.'/../../resources/views', 'queue-stats');
         $this->registerCommands();
     }
 
@@ -58,7 +60,7 @@ class JobsStatsServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/jobs-stats.php', 'jobs-stats'
+            __DIR__.'/../../config/queue-stats.php', 'queue-stats'
         );
     }
 
@@ -78,7 +80,7 @@ class JobsStatsServiceProvider extends ServiceProvider
     protected function publishAssets()
     {
         $this->publishes([
-            __DIR__.'/../../public/js' => public_path('vendor/jobs-stats'),
+            __DIR__.'/../../public/js' => public_path('vendor/queue-stats'),
         ], 'public');
     }
 

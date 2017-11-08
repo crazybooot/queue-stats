@@ -22,7 +22,7 @@
                             dataClass: 'text-center',
                         },
                     ],
-                    apiUrl: '/jobs-stats/workers',
+                    apiUrl: '/queue-stats/workers',
                     css: {
                         tableClass: 'table table-responsive table-hover table-bordered',
                         loadingClass: 'loading',

@@ -64,7 +64,7 @@
             }
         },
         created() {
-            axios.get('jobs-stats/chart')
+            axios.get('queue-stats/chart')
                 .then(response => {
                     this.options.series[0].data = response.data.handling_duration;
                     this.options.series[1].data = response.data.waiting_duration;

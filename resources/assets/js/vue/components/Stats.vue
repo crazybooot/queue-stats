@@ -59,7 +59,7 @@
             }
         },
         created() {
-            axios.get('jobs-stats/stats')
+            axios.get('queue-stats/stats')
                 .then(response => {
                     this.success = parseInt(response.data.success);
                     this.failed = parseInt(response.data.failed);

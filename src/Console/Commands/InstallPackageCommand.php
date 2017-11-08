@@ -1,16 +1,16 @@
 <?php
 declare(strict_types  = 1);
 
-namespace Crazybooot\JobsStats\Commands;
+namespace Crazybooot\QueueStats\Commands;
 
-use Crazybooot\JobsStats\Providers\JobsStatsServiceProvider;
+use Crazybooot\QueueStats\Providers\QueueStatsServiceProvider;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
 /**
  * Class InstallPackageCommand
  *
- * @package Crazybooot\JobsStats\Commands
+ * @package Crazybooot\QueueStats\Commands
  */
 class InstallPackageCommand extends Command
 {
@@ -19,14 +19,14 @@ class InstallPackageCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'jobs-stats:install';
+    protected $signature = 'queue-stats:install';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Install Jobs Stats package';
+    protected $description = 'Install Queue Stats package';
 
     /**
      * Execute the console command.
@@ -36,7 +36,7 @@ class InstallPackageCommand extends Command
     public function handle()
     {
         Artisan::call('vendor:publish', [
-            '--provider' => JobsStatsServiceProvider::class,
+            '--provider' => QueueStatsServiceProvider::class,
             '--tag'      => 'migrations',
         ]);
 
@@ -45,7 +45,7 @@ class InstallPackageCommand extends Command
         ]);
 
         Artisan::call('vendor:publish', [
-            '--provider' => JobsStatsServiceProvider::class,
+            '--provider' => QueueStatsServiceProvider::class,
             '--tag'      => 'public',
             '--force'    => true,
         ]);

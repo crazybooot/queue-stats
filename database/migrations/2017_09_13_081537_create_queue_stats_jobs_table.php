@@ -6,9 +6,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateJobsStatsJobsTable
+ * Class CreateQueueStatsJobsTable
  */
-class CreateJobsStatsJobsTable extends Migration
+class CreateQueueStatsJobsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -17,7 +17,7 @@ class CreateJobsStatsJobsTable extends Migration
      */
     public function up()
     {
-        Schema::create('jobs_stats_jobs', function (Blueprint $table) {
+        Schema::create('queue_stats_jobs', function (Blueprint $table) {
             $table->increments('id');
             $table->string('uuid')->index();
             $table->string('class');
@@ -40,6 +40,6 @@ class CreateJobsStatsJobsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('jobs_stats_jobs');
+        Schema::dropIfExists('queue_stats_jobs');
     }
 }

@@ -6,9 +6,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 /**
- * Class CreateJobsStatsJobAttemptsTable
+ * Class CreateQueueStatsJobAttemptsTable
  */
-class CreateJobsStatsJobAttemptsTable extends Migration
+class CreateQueueStatsJobAttemptsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -17,9 +17,9 @@ class CreateJobsStatsJobAttemptsTable extends Migration
      */
     public function up()
     {
-        Schema::create('jobs_stats_job_attempts', function (Blueprint $table) {
+        Schema::create('queue_stats_job_attempts', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('jobs_stats_job_id');
+            $table->unsignedInteger('job_id');
             $table->unsignedInteger('attempt_number');
             $table->double('started_at')->nullable();
             $table->double('finished_at')->nullable();
@@ -33,9 +33,9 @@ class CreateJobsStatsJobAttemptsTable extends Migration
             $table->timestamps();
 
             $table
-                ->foreign('jobs_stats_job_id')
+                ->foreign('job_id')
                 ->references('id')
-                ->on('jobs_stats_jobs')
+                ->on('queue_stats_jobs')
                 ->onDelete('cascade');
         });
     }
@@ -47,6 +47,6 @@ class CreateJobsStatsJobAttemptsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('jobs_stats_job_tries');
+        Schema::dropIfExists('queue_stats_job_attempts');
     }
 }
