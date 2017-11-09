@@ -35,6 +35,11 @@ class UpdatePackageCommand extends Command
      */
     public function handle()
     {
+        Artisan::call('migrate', [
+            '--path'  => __DIR__.'/../../../database/migrations/',
+            '--force' => true,
+        ]);
+
         Artisan::call('vendor:publish', [
             '--provider' => QueueStatsServiceProvider::class,
             '--tag'      => 'public',

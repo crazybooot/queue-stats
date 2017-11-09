@@ -35,12 +35,8 @@ class InstallPackageCommand extends Command
      */
     public function handle()
     {
-        Artisan::call('vendor:publish', [
-            '--provider' => QueueStatsServiceProvider::class,
-            '--tag'      => 'migrations',
-        ]);
-
         Artisan::call('migrate', [
+            '--path'  => __DIR__.'/../../../database/migrations/',
             '--force' => true,
         ]);
 
