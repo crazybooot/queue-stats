@@ -28,8 +28,8 @@ class CreateQueueStatsJobAttemptsTable extends Migration
             $table->unsignedInteger('queries_count')->nullable();
             $table->double('queries_duration')->nullable();
             $table->string('status')->nullable();
+            $table->text('exception_class')->nullable();
             $table->text('exception_message')->nullable();
-            $table->json('exception_call_stack')->nullable();
             $table->timestamps();
 
             $table

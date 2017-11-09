@@ -30,22 +30,22 @@ class Attempt extends Model
         'queries_count',
         'queries_duration',
         'status',
+        'exception_class',
         'exception_message',
-        'exception_call_stack',
     ];
 
     protected $casts = [
-        'job_id'               => 'integer',
-        'attempt_number'       => 'integer',
-        'started_at'           => 'float',
-        'finished_at'          => 'float',
-        'handling_duration'    => 'float',
-        'waiting_duration'     => 'float',
-        'queries_count'        => 'integer',
-        'queries_duration'     => 'float',
-        'status'               => 'string',
-        'exception_message'    => 'string',
-        'exception_call_stack' => 'array',
+        'job_id'            => 'integer',
+        'attempt_number'    => 'integer',
+        'started_at'        => 'float',
+        'finished_at'       => 'float',
+        'handling_duration' => 'float',
+        'waiting_duration'  => 'float',
+        'queries_count'     => 'integer',
+        'queries_duration'  => 'float',
+        'status'            => 'string',
+        'exception_class'   => 'string',
+        'exception_message' => 'string',
     ];
 
     /**

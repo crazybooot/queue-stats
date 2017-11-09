@@ -9,8 +9,8 @@
                 <th class="text-center">Waiting duration</th>
                 <th class="text-center">Queries duration</th>
                 <th class="text-center">Queries count</th>
+                <th class="text-center">Exception class</th>
                 <th class="text-center">Exception message</th>
-                <th class="text-center">Call stack</th>
             </tr>
             </thead>
             <tbody>
@@ -21,8 +21,8 @@
                 <td class="text-center" v-text="attempt.waiting_duration"></td>
                 <td class="text-center" v-text="attempt.queries_duration"></td>
                 <td class="text-center" v-text="attempt.queries_count"></td>
+                <td class="text-center" v-text="attempt.exception_class"></td>
                 <td class="text-center" v-text="attempt.exception_message"></td>
-                <td class="text-center" v-text="attempt.exception_call_stack"></td>
             </tr>
             </tbody>
         </table>

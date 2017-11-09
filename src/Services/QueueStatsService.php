@@ -15,7 +15,7 @@ use Illuminate\Queue\Jobs\DatabaseJob;
 use Illuminate\Queue\Jobs\RedisJob;
 use DB;
 
-use function config, microtime, json_encode, collect, class_implements, in_array, unserialize;
+use function config, get_class, microtime, collect, class_implements, in_array, unserialize;
 use const true, null;
 
 /**
@@ -127,11 +127,11 @@ class QueueStatsService
 
             if (null !== $queueStatsAttempt) {
                 $queueStatsAttempt->update([
-                    'status'               => Attempt::STATUS_FAILED,
-                    'finished_at'          => $now,
-                    'exception_message'    => $event->exception->getMessage(),
-                    'exception_call_stack' => json_encode($event->exception->getTrace()),
-                    'handling_duration'    => $now - $queueStatsAttempt->getAttribute('started_at'),
+                    'status'            => Attempt::STATUS_FAILED,
+                    'finished_at'       => $now,
+                    'exception_message' => $event->exception->getMessage(),
+                    'exception_class'   => get_class($event->exception),
+                    'handling_duration' => $now - $queueStatsAttempt->getAttribute('started_at'),
                 ]);
             }
         }
@@ -161,13 +161,13 @@ class QueueStatsService
 
             if (null !== $queueStatsAttempt) {
                 $queueStatsAttempt->update([
-                    'status'               => Attempt::STATUS_FAILED,
-                    'finished_at'          => $now,
-                    'exception_message'    => $event->exception->getMessage(),
-                    'exception_call_stack' => json_encode($event->exception->getTrace()),
-                    'handling_duration'    => $now - $queueStatsAttempt->getAttribute('started_at'),
-                    'queries_count'        => null !== $queries ? $queries->count() : null,
-                    'queries_duration'     => null !== $queries ? $queries->sum('time') : null,
+                    'status'            => Attempt::STATUS_FAILED,
+                    'finished_at'       => $now,
+                    'exception_message' => $event->exception->getMessage(),
+                    'exception_class'   => get_class($event->exception),
+                    'handling_duration' => $now - $queueStatsAttempt->getAttribute('started_at'),
+                    'queries_count'     => null !== $queries ? $queries->count() : null,
+                    'queries_duration'  => null !== $queries ? $queries->sum('time') : null,
                 ]);
             }
         }

@@ -14114,12 +14114,12 @@ var render = function() {
               _vm._v(" "),
               _c("td", {
                 staticClass: "text-center",
-                domProps: { textContent: _vm._s(attempt.exception_message) }
+                domProps: { textContent: _vm._s(attempt.exception_class) }
               }),
               _vm._v(" "),
               _c("td", {
                 staticClass: "text-center",
-                domProps: { textContent: _vm._s(attempt.exception_call_stack) }
+                domProps: { textContent: _vm._s(attempt.exception_message) }
               })
             ])
           })
@@ -14147,9 +14147,9 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", { staticClass: "text-center" }, [_vm._v("Queries count")]),
         _vm._v(" "),
-        _c("th", { staticClass: "text-center" }, [_vm._v("Exception message")]),
+        _c("th", { staticClass: "text-center" }, [_vm._v("Exception class")]),
         _vm._v(" "),
-        _c("th", { staticClass: "text-center" }, [_vm._v("Call stack")])
+        _c("th", { staticClass: "text-center" }, [_vm._v("Exception message")])
       ])
     ])
   }
