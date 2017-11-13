@@ -42,6 +42,10 @@
                         {
                             name: 'Queries duration',
                             data: []
+                        },
+                        {
+                            name: 'Calculated waiting duration',
+                            data: []
                         }
                     ],
 
@@ -69,7 +73,7 @@
                     this.options.series[0].data = response.data.handling_duration;
                     this.options.series[1].data = response.data.waiting_duration;
                     this.options.series[2].data = response.data.queries_duration;
-                    this.options.xAxis.categories = response.data.classes;
+                    this.options.series[3].data = response.data.calculated_waiting_duration;
                 })
         }
     }

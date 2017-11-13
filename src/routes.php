@@ -30,4 +30,9 @@ Route::group([
         'as'   => '.config',
         'uses' => 'QueueStatsController@config',
     ]);
+
+    Route::get('/filters', [
+        'as'   => '.filters',
+        'uses' => 'QueueStatsController@filters',
+    ]);
 });

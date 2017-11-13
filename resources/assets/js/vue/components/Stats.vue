@@ -46,13 +46,13 @@
         },
         computed: {
             successPercent() {
-                return this.total / 100 * this.success;
+                return Math.round((this.total * this.success) / 100);
             },
             failedPercent() {
-                return this.total / 100 * this.failed;
+                return Math.round((this.total  * this.failed ) / 100);
             },
             unhandledPercent() {
-                return this.total / 100 * this.unhandled;
+                return Math.round((this.total  * this.unhandled) / 100);
             },
             total() {
                 return this.success + this.failed + this.unhandled;

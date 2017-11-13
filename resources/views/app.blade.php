@@ -15,6 +15,7 @@
     <div class="container-fluid">
         <stats></stats>
         <config></config>
+        <filters></filters>
         <div class="card mb-3 text-center">
             <h3 class="card-header">Jobs Stats Chart</h3>
             <div class="card-block">

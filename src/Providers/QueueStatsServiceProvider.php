@@ -5,7 +5,7 @@ namespace Crazybooot\QueueStats\Providers;
 
 use Crazybooot\QueueStats\Commands\InstallPackageCommand;
 use Crazybooot\QueueStats\Commands\UpdatePackageCommand;
-use Crazybooot\QueueStats\Services\JobsStatsService;
+use Crazybooot\QueueStats\Services\QueueStatsService;
 use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;

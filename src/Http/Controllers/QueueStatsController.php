@@ -70,7 +70,7 @@ class QueueStatsController extends Controller
      */
     public function chart()
     {
-        $waitingDuration = DB::table('queue_stats_jobs')
+        $stats = DB::table('queue_stats_jobs')
             ->join(
                 'queue_stats_job_attempts',
                 'queue_stats_jobs.id',
@@ -79,49 +79,21 @@ class QueueStatsController extends Controller
             )
             ->select(
                 'queue_stats_jobs.id',
-                DB::raw('SUM(queue_stats_job_attempts.waiting_duration) as waiting_duration')
+                DB::raw('SUM(queue_stats_job_attempts.waiting_duration) as waiting_duration'),
+                DB::raw('SUM(queue_stats_job_attempts.handling_duration) as handling_duration'),
+                DB::raw('SUM(queue_stats_job_attempts.queries_duration)/1000 as queries_duration'),
+                DB::raw('SUM(queue_stats_job_attempts.waiting_duration) - IFNULL(queue_stats_jobs.delay, 0) as calculated_waiting_duration')
             )
             ->groupBy('queue_stats_jobs.id')
             ->orderBy('queue_stats_jobs.id')
-            ->get()
-            ->pluck('waiting_duration');
+            ->get();
 
-        $handlingDuration = DB::table('queue_stats_jobs')
-            ->join(
-                'queue_stats_job_attempts',
-                'queue_stats_jobs.id',
-                '=',
-                'queue_stats_job_attempts.job_id'
-            )
-            ->select(
-                'queue_stats_jobs.id',
-                DB::raw('SUM(queue_stats_job_attempts.handling_duration) as handling_duration')
-            )
-            ->groupBy('queue_stats_jobs.id')
-            ->orderBy('queue_stats_jobs.id')
-            ->get()
-            ->pluck('handling_duration');
-
-        $queriesDuration = DB::table('queue_stats_jobs')
-            ->join(
-                'queue_stats_job_attempts',
-                'queue_stats_jobs.id',
-                '=',
-                'queue_stats_job_attempts.job_id'
-            )
-            ->select(
-                'queue_stats_jobs.id',
-                DB::raw('SUM(queue_stats_job_attempts.queries_duration)/1000 as queries_duration')
-            )
-            ->groupBy('queue_stats_jobs.id')
-            ->orderBy('queue_stats_jobs.id')
-            ->get()
-            ->pluck('queries_duration');
 
         return response()->json([
-            'waiting_duration'  => $waitingDuration,
-            'handling_duration' => $handlingDuration,
-            'queries_duration'  => $queriesDuration,
+            'waiting_duration'            => $stats->pluck('waiting_duration'),
+            'handling_duration'           => $stats->pluck('handling_duration'),
+            'queries_duration'            => $stats->pluck('queries_duration'),
+            'calculated_waiting_duration' => $stats->pluck('calculated_waiting_duration'),
         ]);
     }
 
@@ -165,5 +137,23 @@ class QueueStatsController extends Controller
                 'retry_after' => $value['retry_after'] ?? null,
             ];
         })->values());
+    }
+
+    /**
+     * @return JsonResponse
+     */
+    public function filters(): JsonResponse
+    {
+        $filters = DB::table('queue_stats_jobs')
+            ->select('class', 'queue', 'connection', 'status')
+            ->distinct()
+            ->get();
+
+        return response()->json([
+            'classnames'  => $filters->pluck('class')->unique(),
+            'queues'      => $filters->pluck('queue')->unique(),
+            'connections' => $filters->pluck('connection')->unique(),
+            'statuses'    => $filters->pluck('status')->unique(),
+        ]);
     }
 }

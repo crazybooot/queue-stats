@@ -18,6 +18,7 @@ import List from './components/List.vue'
 import Job from './components/Job.vue'
 import Stats from './components/Stats.vue'
 import Config from './components/Config.vue'
+import Filter from './components/Filter.vue'
 import Vuetable from 'vuetable-2/src/components/Vuetable.vue'
 import VuetablePaginationBootstrap from './components/VuetablePaginationBootstrap.vue'
 import VueHighcharts from 'vue-highcharts'
@@ -29,6 +30,7 @@ Vue.component('job', Job);
 Vue.component('list', List);
 Vue.component('stats', Stats);
 Vue.component('config', Config);
+Vue.component('filters', Filter);
 
 Vue.use(VueHighcharts);
 

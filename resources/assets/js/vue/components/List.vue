@@ -56,13 +56,6 @@
                             dataClass: 'text-center',
                         },
                         {
-                            name: 'tries',
-                            title: 'tries',
-                            sortField: 'queue_stats_jobs.tries',
-                            titleClass: 'text-center',
-                            dataClass: 'text-center',
-                        },
-                        {
                             name: 'timeout',
                             title: 'timeout',
                             sortField: 'queue_stats_jobs.timeout',
